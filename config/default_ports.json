@@ -1,0 +1,108 @@
+{
+  "description": "Default list of common service ports for quick scanning in Py-Scan Network Tool.",
+  "common_ports": [
+    {
+      "port": 21,
+      "service": "FTP",
+      "protocol": "TCP",
+      "description": "File Transfer Protocol (Unencrypted)"
+    },
+    {
+      "port": 22,
+      "service": "SSH",
+      "protocol": "TCP",
+      "description": "Secure Shell (Encrypted remote management)"
+    },
+    {
+      "port": 23,
+      "service": "Telnet",
+      "protocol": "TCP",
+      "description": "Telecommunication Network (Unencrypted remote management)"
+    },
+    {
+      "port": 25,
+      "service": "SMTP",
+      "protocol": "TCP",
+      "description": "Simple Mail Transfer Protocol (Email sending)"
+    },
+    {
+      "port": 53,
+      "service": "DNS",
+      "protocol": "UDP/TCP",
+      "description": "Domain Name System (Name resolution)"
+    },
+    {
+      "port": 80,
+      "service": "HTTP",
+      "protocol": "TCP",
+      "description": "Hypertext Transfer Protocol (Unencrypted web traffic)"
+    },
+    {
+      "port": 110,
+      "service": "POP3",
+      "protocol": "TCP",
+      "description": "Post Office Protocol v3 (Email retrieval)"
+    },
+    {
+      "port": 139,
+      "service": "NetBIOS",
+      "protocol": "TCP",
+      "description": "NetBIOS Session Service (Windows file sharing)"
+    },
+    {
+      "port": 143,
+      "service": "IMAP",
+      "protocol": "TCP",
+      "description": "Internet Message Access Protocol (Modern email retrieval)"
+    },
+    {
+      "port": 443,
+      "service": "HTTPS",
+      "protocol": "TCP",
+      "description": "HTTP Secure (Encrypted web traffic)"
+    },
+    {
+      "port": 445,
+      "service": "SMB",
+      "protocol": "TCP",
+      "description": "Server Message Block (Windows file and printer sharing)"
+    },
+    {
+      "port": 3389,
+      "service": "RDP",
+      "protocol": "TCP",
+      "description": "Remote Desktop Protocol (Windows remote access)"
+    },
+    {
+      "port": 8080,
+      "service": "HTTP-Proxy",
+      "protocol": "TCP",
+      "description": "Alternate HTTP port (often used for web proxies or dev servers)"
+    }
+  ],
+  "port_list_only": [
+    21, 22, 23, 25, 53, 80, 110, 139, 143, 443, 445, 3389, 8080
+  ]
+}
+
+// import json
+// import os
+
+// def load_default_ports(file_path='config/default_ports.json'):
+//     """Loads the list of common ports from the configuration file."""
+//     try:
+//         with open(file_path, 'r') as f:
+//             data = json.load(f)
+//             # We use the 'port_list_only' array for scanning efficiency
+//             return data.get('port_list_only', [])
+//     except FileNotFoundError:
+//         print(f"Error: Default ports file not found at {file_path}")
+//         return []
+//     except json.JSONDecodeError:
+//         print(f"Error: Failed to parse JSON file at {file_path}")
+//         return []
+
+// # Example usage:
+// ports_to_scan = load_default_ports()
+// if ports_to_scan:
+//     print(f"Scanning the following {len(ports_to_scan)} default ports: {ports_to_scan}")

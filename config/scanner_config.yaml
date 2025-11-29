@@ -1,0 +1,73 @@
+#
+# Py-Scan Network Scanner Configuration
+#
+# Settings related to speed, reliability, and host discovery fallback logic.
+#
+
+# --- 1. CONCURRENCY SETTINGS --------------------------------------------------
+concurrency:
+  # The maximum number of threads (workers) to use for port scanning.
+  # Higher values mean faster scans but consume more system resources.
+  max_threads: 50
+  
+  # The maximum number of tasks (e.g., host discovery checks) to hold 
+  # in the internal queue before blocking new additions.
+  queue_size: 100
+
+# --- 2. SOCKET & TIMEOUT SETTINGS -------------------------------------------
+socket:
+  # The timeout (in seconds) for a single port connection attempt.
+  # Lower values are faster but increase false negatives (missing open ports).
+  connect_timeout: 0.5 
+  
+  # The number of times to retry a connection if the initial attempt fails or times out unexpectedly.
+  retries: 2
+  
+  # The timeout (in seconds) for receiving data during banner grabbing.
+  receive_timeout: 1.0
+
+# --- 3. HOST DISCOVERY SETTINGS ---------------------------------------------
+host_discovery:
+  # Time (in seconds) to wait for an ICMP (ping) response before marking the host as down.
+  icmp_timeout: 0.8
+  
+  # List of well-known ports to use for the TCP SYN/Connect fallback.
+  # If ICMP fails, the tool checks these ports for a SYN-ACK/RST response.
+  tcp_fallback_ports: [80, 443, 22]
+  
+  # If True, enables the Layer 2 ARP scan method for hosts on the local subnet.
+  enable_arp_scan: True
+
+# --- 4. REPORTING SETTINGS --------------------------------------------------
+reporting:
+  # Controls whether to output the full service banner (can be noisy).
+  include_full_banner: False
+  
+  # The default output format for the final scan report.
+  # Options: 'json', 'txt'
+  default_format: 'json'
+
+  import yaml
+
+# def load_scanner_config(file_path='config/scanner_config.yaml'):
+#     """Loads and returns the scanner configuration settings."""
+#     try:
+#         with open(file_path, 'r') as f:
+#             config = yaml.safe_load(f)
+#             return config
+#     except FileNotFoundError:
+#         print("Error: Configuration file not found. Using default internal settings.")
+#         # Return sensible default settings if the file is missing
+#         return {} 
+#     except yaml.YAMLError as exc:
+#         print(f"Error parsing YAML file: {exc}")
+#         return {}
+
+# # Example Usage
+# config = load_scanner_config()
+# if config:
+#     # Accessing settings for the threaded scanner
+#     max_threads = config['concurrency']['max_threads']
+#     connect_timeout = config['socket']['connect_timeout']
+    
+#     print(f"Scanner initialized with {max_threads} threads and a {connect_timeout}s timeout.")
