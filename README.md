@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Key Features
+##  Key Features
 
 * **Host Discovery:** Uses multiple methods to reliably detect active hosts: ICMP ping, ARP scanning (local subnet), and TCP SYN fallback checks.
 * **High-Speed Scanning:** Implements **multi-threading** for efficient and rapid port scanning across large ranges.
@@ -15,7 +15,7 @@
 
 ---
 
-## ⚙️ Project Setup
+##  Project Setup
 
 ### Prerequisites
 
@@ -64,8 +64,6 @@ The project is organized as a professional Python package (`py_scan_tool`) to en
 | └── 📄`scan_results_YYMMDD.json` | Example output file.                                             |                                                                            |
 | **📄`requirements.txt`**      | **Dependencies**                                           | List of all required Python libraries.                                     |
 | **📄`.gitignore`**            | **Version Control**                                        | Ensures temporary files (`__pycache__`,`reports/`) are ignored by Git. |
-
-Export to Sheets
 
 ---
 
