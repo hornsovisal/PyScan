@@ -16,5 +16,4 @@ client.send(request.encode())
 # receive some data
 response = client.recv(4096)
 print(response.decode())  # decode from bytes to string
-
-kjhdsfdsfsdfdsfdsfdfsdfsdfsfsfdddfdssfddfd
+print("hello")
