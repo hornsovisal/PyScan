@@ -138,6 +138,20 @@ class BaseScanner(ABC):
 
     def generate_ip_range(self, base_ip, start_host, end_host):
         return [f"{base_ip}.{i}" for i in range(start_host, end_host + 1)]
+    
+    def generate_ip_range_full(self, start_ip, end_ip):
+        """Generate IP range from start_ip to end_ip (e.g., '10.12.0.1' to '10.12.3.254')"""
+        def ip_to_int(ip):
+            parts = ip.split('.')
+            return (int(parts[0]) << 24) + (int(parts[1]) << 16) + (int(parts[2]) << 8) + int(parts[3])
+        
+        def int_to_ip(num):
+            return f"{(num >> 24) & 255}.{(num >> 16) & 255}.{(num >> 8) & 255}.{num & 255}"
+        
+        start_num = ip_to_int(start_ip)
+        end_num = ip_to_int(end_ip)
+        
+        return [int_to_ip(i) for i in range(start_num, end_num + 1)]
 
     @abstractmethod
     def ping(self, ip):
@@ -146,14 +160,23 @@ class BaseScanner(ABC):
 
 class ICMPScanner(BaseScanner):
     def ping(self, ip):
+        """Fast ICMP ping with timeout and response time."""
         param = "-n" if platform.system().lower() == "windows" else "-c"
+        timeout_param = "-w" if platform.system().lower() == "windows" else "-W"
         try:
-            subprocess.check_output(["ping", param, "1", ip], stderr=subprocess.STDOUT)
-            return True
-        except subprocess.CalledProcessError:
-            return False
+            import time
+            start = time.time()
+            subprocess.check_output(
+                ["ping", param, "1", timeout_param, "2", ip],
+                stderr=subprocess.DEVNULL,
+                timeout=2.5
+            )
+            response_time = int((time.time() - start) * 1000)
+            return True, response_time
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            return False, None
         except Exception:
-            return False
+            return False, None
 
 
 class ARPScanner(BaseScanner):
@@ -162,15 +185,37 @@ class ARPScanner(BaseScanner):
         self._icmp_fallback = ICMPScanner()
 
     def ping(self, ip):
+        """ARP ping with MAC address retrieval."""
         if not SCAPY_AVAILABLE:
             return self._icmp_fallback.ping(ip)
         try:
+            import time
+            start = time.time()
             arp_request = ARP(pdst=ip)
             broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
-            answered = srp(broadcast / arp_request, timeout=1, verbose=0)[0]
-            return len(answered) > 0
+            answered = srp(broadcast / arp_request, timeout=2, verbose=0)[0]
+            if answered:
+                response_time = int((time.time() - start) * 1000)
+                mac = answered[0][1].hwsrc
+                return True, response_time, mac
+            return False, None, None
         except Exception:
-            return self._icmp_fallback.ping(ip)
+            result, rtt = self._icmp_fallback.ping(ip)
+            return result, rtt, None
+    
+    def get_mac(self, ip):
+        """Get MAC address for an IP."""
+        if not SCAPY_AVAILABLE:
+            return None
+        try:
+            arp_request = ARP(pdst=ip)
+            broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
+            answered = srp(broadcast / arp_request, timeout=2.0, verbose=0)[0]
+            if answered:
+                return answered[0][1].hwsrc
+        except Exception:
+            pass
+        return None
 
 
 class HostScanner:
@@ -178,47 +223,85 @@ class HostScanner:
         self.icmp = ICMPScanner()
         self.arp = ARPScanner()
 
-    def _build_result(self, ip, scanner, label):
+    def _build_result(self, ip, scanner, label, ping_time=None, mac=None):
         identity = scanner.resolve_identity(ip)
         ports = scanner.scan_ports(ip)
-        return ip, f"Reachable ({label})", identity, ports
+        ping_str = f"{ping_time}ms" if ping_time else "N/A"
+        mac_str = mac if mac else "N/A"
+        return ip, label, identity, ping_str, mac_str, ports
 
-    def scan_host(self, ip, method="auto"):
+    def scan_host(self, ip, method="auto", skip_ports=False):
         method = method.lower()
         if method not in ("auto", "icmp", "arp"):
             raise ValueError("method must be 'auto', 'icmp', or 'arp'")
 
+        # For auto mode: try ICMP first, then ARP if ICMP fails
+        if method == "auto":
+            # Try ICMP
+            is_alive_icmp, ping_time_icmp = self.icmp.ping(ip)
+            
+            if is_alive_icmp:
+                # ICMP worked, try to get MAC
+                arp_result = self.arp.ping(ip)
+                mac = arp_result[2] if len(arp_result) == 3 and arp_result[0] else None
+                return self._build_result(ip, self.icmp, "Alive", ping_time_icmp, mac)
+            else:
+                # ICMP failed, try ARP
+                arp_result = self.arp.ping(ip)
+                if len(arp_result) == 3:
+                    is_alive_arp, ping_time_arp, mac = arp_result
+                else:
+                    is_alive_arp, ping_time_arp = arp_result
+                    mac = None
+                
+                if is_alive_arp:
+                    return self._build_result(ip, self.arp, "Alive", ping_time_arp, mac)
+                else:
+                    return None  # Dead host
+        
+        # Single method mode
         if method == "arp":
             primary = self.arp
-            allow_fallback = False
         else:
             primary = self.icmp
-            allow_fallback = method == "auto"
 
-        if primary.ping(ip):
-            label = "ICMP" if primary is self.icmp else "ARP"
-            return self._build_result(ip, primary, label)
+        # Try primary method
+        if primary is self.icmp:
+            is_alive, ping_time = primary.ping(ip)
+            if is_alive:
+                mac = self.arp.get_mac(ip) if not skip_ports else None
+                scanner_to_use = primary if not skip_ports else self.icmp
+                return self._build_result(ip, scanner_to_use, "Alive", ping_time, mac)
+        else:
+            result = primary.ping(ip)
+            if len(result) == 3:
+                is_alive, ping_time, mac = result
+            else:
+                is_alive, ping_time = result
+                mac = None
+            if is_alive:
+                scanner_to_use = primary if not skip_ports else self.arp
+                return self._build_result(ip, scanner_to_use, "Alive", ping_time, mac)
 
-        if allow_fallback and self.arp.ping(ip):
-            return self._build_result(ip, self.arp, "ARP fallback")
+        return None  # Dead host
 
-        return ip, "Unreachable", "N/A", "N/A"
-
-    def scan_hosts(self, ip_range, method="auto", max_workers=50, show_progress=True):
+    def scan_hosts(self, ip_range, method="auto", max_workers=100, show_progress=True, alive_only=True):
         total = len(ip_range)
         if total == 0:
             return []
 
         progress = 0
+        alive_count = 0
         last_percent = -1
 
-        def report(step):
-            nonlocal last_percent
+        def report(step, alive):
+            nonlocal last_percent, alive_count
+            alive_count += alive
             if not show_progress:
                 return
             percent = int(step * 100 / total)
-            if percent != last_percent:
-                sys.stdout.write(f"\rProgress: {percent}%")
+            if percent != last_percent or alive > 0:
+                sys.stdout.write(f"\rScanning: {percent}% ({alive_count} alive / {step} scanned)    ")
                 sys.stdout.flush()
                 last_percent = percent
 
@@ -226,30 +309,49 @@ class HostScanner:
             futures = {executor.submit(self.scan_host, ip, method): ip for ip in ip_range}
             results = []
             for future in as_completed(futures):
-                results.append(future.result())
-                progress += 1
-                report(progress)
+                result = future.result()
+                if result is not None:  # Host is alive
+                    results.append(result)
+                    progress += 1
+                    report(progress, 1)
+                else:
+                    if not alive_only:
+                        ip = futures[future]
+                        results.append((ip, "Dead", "N/A", "N/A", "N/A", "N/A"))
+                    progress += 1
+                    report(progress, 0)
 
-        report(total)  # ensure 100%
         if show_progress:
             sys.stdout.write("\n")
 
         results.sort(key=lambda x: tuple(int(part) for part in x[0].split(".")))
         return results
 
-    def display(self, ip_range, method="auto", max_workers=50):
-        results = self.scan_hosts(ip_range, method, max_workers, show_progress=True)
-        label = "ICMP->ARP Auto" if method == "auto" else method.upper()
-        print(f"{label} Scan Results:")
-        print(f"{'IP':<15} {'Status':<22} {'Identity':<32} {'Ports':<20}")
-        print("-" * 100)
-        for ip, status, identity, ports in results:
-            print(f"{ip:<15} {status:<22} {identity:<32} {ports:<20}")
+    def display(self, ip_range, method="auto", max_workers=50, alive_only=True):
+        print(f"\nStarting scan of {len(ip_range)} IPs...\n")
+        results = self.scan_hosts(ip_range, method, max_workers, show_progress=True, alive_only=alive_only)
+        
+        print(f"\n{'='*120}")
+        print(f"Found {len(results)} alive host(s)")
+        print(f"{'='*120}")
+        print(f"{'IP':<16} {'Status':<8} {'Hostname':<25} {'Ping':<8} {'MAC Address':<18} {'Ports':<30}")
+        print("-" * 120)
+        
+        for ip, status, identity, ping_time, mac, ports in results:
+            print(f"{ip:<16} {status:<8} {identity:<25} {ping_time:<8} {mac:<18} {ports:<30}")
+        
+        print("="*120)
 
 
 if __name__ == "__main__":
     scanner = HostScanner()
-    sample_range = scanner.icmp.generate_ip_range("192.168.100", 1, 215)
+    
+    # Method 1: Single subnet range
+    # sample_range = scanner.icmp.generate_ip_range("10.12.3", 1, 254)
+    
+    # Method 2: Cross-subnet range (e.g., 10.12.0.1 to 10.12.3.0)
+    sample_range = scanner.icmp.generate_ip_range_full("10.12.0.1", "10.12.3.254")
+    
     scanner.display(sample_range, method="auto")
 
 
