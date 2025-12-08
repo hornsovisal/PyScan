@@ -39,8 +39,9 @@ You must have Python 3.x installed. You may also need to run the tool with eleva
    ```
 
 ### Basic Usage
-
-
+  ```
+    ./main.py
+   ```
 
 ---
 
@@ -54,14 +55,14 @@ The project is organized as a professional Python package (`py_scan_tool`) to en
 | ├── 📁`host_discovery/`          | Handles**Host Detection**using ICMP, ARP, and TCP methods. | `icmp_ping.py`,`arp_scan.py`                                           |
 | ├── 📁`port_scanning/`           | Manages**Concurrency**and raw socket connections.          | `threaded_scanner.py`,`socket_handler.py`                              |
 | ├── 📁`reporting/`               | Handles**Report Generation**and file output.               | `report_manager.py`,`json_writer.py`                                   |
-| ├── 📄**`main_cli.py`**    | **Primary Entry Point (CLI)**                              | Orchestrates the entire scan process.                                      |
+| ├── 📄**`main.py`**    | **Primary Entry Point (CLI or GUI)**                              | Orchestrates the entire scan process.                                      |
 | **📁`config/`**               | **Tool Settings**                                          | External files to configure tool behavior.                                 |
 | ├── 📄`default_ports.json`       | List of commonly scanned ports (e.g., 80, 443, 22).              |                                                                            |
 | └── 📄`scanner_config.yaml`      | **Performance Settings**(thread count, timeouts, retries). |                                                                            |
 | **📁`tests/`**                | **Automated Verification**                                 | Scripts to ensure the accuracy of host detection and port state logic.     |
 | └── 📄`test_scanner.py`          | Unit and integration tests.                                      |                                                                            |
 | **📁`reports/`**              | **Scan Output**                                            | Stores all generated scan reports.                                         |
-| └── 📄`scan_results_YYMMDD.json` | Example output file.                                             |                                                                            |
+| └── 📄`scan_results_YYMMDD.pdf` | Example output file.                                             |                                                                            |
 | **📄`requirements.txt`**      | **Dependencies**                                           | List of all required Python libraries.                                     |
 
 ---
@@ -70,6 +71,11 @@ The project is organized as a professional Python package (`py_scan_tool`) to en
 
 **Prepared By:** Horn Sovisal, Kuyseng Marakat, Chhit Sovathana
 
-**Course:** Python for Cyber Security
+**Course:** Python for Cyber Security 
 
-**Department:** Telecom and Networking, Cyber Security, CADT
+**Course Info** : This course introduces Python programming. with a strong focus on Object-Oriented Programming (OOP) and its application in cybersecurity.
+
+**Lecturer** : Mr. Han Leangsiv
+
+**Department:** Telecom and Networking, Cyber Security, Cambodia Accademy of Digital Technology(CADT)
+
