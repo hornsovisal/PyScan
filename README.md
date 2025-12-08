@@ -51,11 +51,11 @@ The project is organized as a professional Python package (`py_scan_tool`) to en
 
 | Directory/File                        | Purpose                                                          | Key Files/Notes                                                            |
 | ------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| **📁`py_scan_tool/`**         | **The Core Python Package**(Source Code)                   | Contains all executable logic.                                             |
+| **📁`src/`**         | **The Core Python Package**(Source Code)                   | Contains all executable logic.                                             |
 | ├── 📁`host_discovery/`          | Handles**Host Detection**using ICMP, ARP, and TCP methods. | `icmp_ping.py`,`arp_scan.py`                                           |
 | ├── 📁`port_scanning/`           | Manages**Concurrency**and raw socket connections.          | `threaded_scanner.py`,`socket_handler.py`                              |
 | ├── 📁`reporting/`               | Handles**Report Generation**and file output.               | `report_manager.py`,`json_writer.py`                                   |
-| ├── 📄**`main.py`**    | **Primary Entry Point (CLI or GUI)**                              | Orchestrates the entire scan process.                                      |
+| ├── 📄**`main.py`**    | **Primary Entry Point (CLI or GUI)**                              |  the entire scan process.                                      |
 | **📁`config/`**               | **Tool Settings**                                          | External files to configure tool behavior.                                 |
 | ├── 📄`default_ports.json`       | List of commonly scanned ports (e.g., 80, 443, 22).              |                                                                            |
 | └── 📄`scanner_config.yaml`      | **Performance Settings**(thread count, timeouts, retries). |                                                                            |
@@ -64,6 +64,7 @@ The project is organized as a professional Python package (`py_scan_tool`) to en
 | **📁`reports/`**              | **Scan Output**                                            | Stores all generated scan reports.                                         |
 | └── 📄`scan_results_YYMMDD.pdf` | Example output file.                                             |                                                                            |
 | **📄`requirements.txt`**      | **Dependencies**                                           | List of all required Python libraries.                                     |
+| **📄`__init__py`**      | **Python Package**                                           | Mark a directory as a Python package.                                     |
 
 ---
 
