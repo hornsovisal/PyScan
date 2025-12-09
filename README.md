@@ -38,16 +38,12 @@ You must have Python 3.x installed. You may also need to run the tool with eleva
    pip install -r requirements.txt
    ```
 
-### Basic Usage
-
-````
-  ## 🧩 Basic Usage
-
-    To start **Scan-Bondanh**, simply run the main script:
-    ```bash
+## 🧩 Basic Usage
+  To start **Scan-Bondanh**, simply run the main script:
+    ```
     python3 main.py
-    ````
-    Once executed, the tool displays an ASCII banner followed by the main menu:
+    ```
+  Once executed, the tool displays an ASCII banner followed by the main menu:
     ```
     ======== Scan Bondanh ========
     [1] Host Discovery
@@ -57,19 +53,20 @@ You must have Python 3.x installed. You may also need to run the tool with eleva
     ==============================
     Choose an option (1, 2, 3):
     ```
-    ### 🔎 1. Host Discovery
-    Select this option to scan a network for active hosts.
-    You will be prompted to enter an IP range (for example, `192.168.1.1-192.168.1.254`), and the tool will list all reachable devices on that network.
     
-    ### 🚪 2. Port Scanning
-    Use this option to check for open ports on a specific target.
-    You will be asked to enter a target IP or domain (e.g., `cadt.edu.kh`), and the scanner will test common or specified ports to identify what services are running.
+  ### 🔎 1. Host Discovery
+  Select this option to scan a network for active hosts.
+  You will be prompted to enter an IP range (for example, `192.168.1.1-192.168.1.254`), and the tool will list all reachable devices on that network.
     
-    ### 🌐 3. What is my IP?
-    Displays your **IP address** and may also show additional local network information.
+  ### 🚪 2. Port Scanning
+  Use this option to check for open ports on a specific target.
+  You will be asked to enter a target IP or domain (e.g., `cadt.edu.kh`), and the scanner will test common or specified ports to identify what services are running.
     
-    ### ❌ 4. Exit
-    Closes the program.
+  ### 🌐 3. What is my IP?
+  Displays your **IP address** and may also show additional local network information.
+    
+  ### ❌ 4. Exit
+  Closes the program.
 
 
 ## 🧱 Project Structure
