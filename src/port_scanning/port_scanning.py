@@ -1,105 +1,150 @@
 import socket
+import json
+import re
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ----------------------------------------------
-# Common Ports → Services Mapping
+# LOAD PORT LIST FROM defaultport.json
 # ----------------------------------------------
-COMMON_SERVICES = {
-    21: "FTP",
-    22: "SSH",
-    23: "TELNET",
-    25: "SMTP",
-    53: "DNS",
-    80: "HTTP",
-    110: "POP3",
-    139: "NetBIOS",
-    143: "IMAP",
-    443: "HTTPS",
-    3306: "MySQL",
-    3389: "RDP",
-    8080: "HTTP-Proxy"
-}
+def load_ports():
+    try:
+        with open("defaultport.json", "r") as f:
+            data = json.load(f)
+            return data.get("ports", [])
+    except Exception as e:
+        print("Error loading defaultport.json:", e)
+        return []
+
 
 # ----------------------------------------------
-# Banner Grabbing Function
+# CHECK IF IP IS PRIVATE
+# ----------------------------------------------
+def is_private_ip(ip):
+    private_patterns = [
+        r"^10\.",            # 10.0.0.0 – 10.255.255.255
+        r"^172\.(1[6-9]|2[0-9]|3[0-1])\.",  # 172.16.0.0 – 172.31.255.255
+        r"^192\.168\.",      # 192.168.0.0 – 192.168.255.255
+        r"^127\.",           # Loopback
+        r"^169\.254\."       # APIPA
+    ]
+    for p in private_patterns:
+        if re.match(p, ip):
+            return True
+    return False
+
+
+# ----------------------------------------------
+# Resolve domain → IP (nslookup style)
+# ----------------------------------------------
+def resolve_target(target):
+    try:
+        # If target is domain → convert to IP
+        return socket.gethostbyname(target)
+    except:
+        return None
+
+
+# ----------------------------------------------
+# Banner Grabbing
 # ----------------------------------------------
 def grab_banner(ip, port):
     try:
         s = socket.socket()
         s.settimeout(1)
         s.connect((ip, port))
-        try:
-            banner = s.recv(1024).decode().strip()
-            return banner
-        except:
-            return None
+        banner = s.recv(1024).decode(errors="ignore").strip()
+        s.close()
+        return banner
     except:
         return None
 
+
 # ----------------------------------------------
-# Port Scan Worker Function
+# Port Scan Worker
 # ----------------------------------------------
 def scan_port(ip, port):
-    """
-    Returns: (port, status, service, banner)
-    """
     s = socket.socket()
     s.settimeout(0.5)
 
     try:
         s.connect((ip, port))
         s.close()
-
-<<<<<<< HEAD
-# receive some data
-response = client.recv(4096)
-print(response.decode())  # decode from bytes to string
-=======
-        # If connection succeeds -> port is OPEN
-        service = COMMON_SERVICES.get(port, "Unknown")
         banner = grab_banner(ip, port)
-
-        return port, "OPEN", service, banner
+        return port, "OPEN", banner
     except socket.timeout:
-        return port, "FILTERED", None, None
+        return port, "FILTERED", None
     except:
-        return port, "CLOSED", None, None
+        return port, "CLOSED", None
+
 
 # ----------------------------------------------
-# Main Scanner with Concurrency
+# Multi-thread port scan
 # ----------------------------------------------
-def port_scan(ip, start_port, end_port, workers=100):
+def port_scan(ip, ports, workers=100):
     results = []
-
-    print(f"\nScanning {ip} from port {start_port} to {end_port}...")
-    print(f"Using {workers} threads...\n")
+    print(f"\nScanning {ip}...\n")
 
     with ThreadPoolExecutor(max_workers=workers) as executor:
-        futures = [executor.submit(scan_port, ip, port)
-                   for port in range(start_port, end_port + 1)]
+        futures = [executor.submit(scan_port, ip, port) for port in ports]
 
         for future in as_completed(futures):
             results.append(future.result())
 
     return sorted(results, key=lambda x: x[0])
 
+
 # ----------------------------------------------
-# Run the Scanner
+# Optional: nmap scan
+# ----------------------------------------------
+def nmap_scan(ip):
+    print("\nRunning Nmap scan...\n")
+    try:
+        output = subprocess.check_output(["nmap", "-sV", ip], stderr=subprocess.STDOUT)
+        print(output.decode())
+    except Exception as e:
+        print("Nmap not installed or error:", e)
+
+
+# ----------------------------------------------
+# MAIN
 # ----------------------------------------------
 if __name__ == "__main__":
-    target_ip = input("Enter target IP: ")
-    start = int(input("Start Port: "))
-    end = int(input("End Port: "))
+    user_input = input("Enter target Public IP or Domain: ").strip()
 
-    results = port_scan(target_ip, start, end)
+    # Convert domain → IP
+    ip = resolve_target(user_input)
 
-    print("\n--- Scan Results ---\n")
-    for port, status, service, banner in results:
-        if status == "OPEN":
-            print(f"[+] Port {port} OPEN ({service})")
-            if banner:
-                print(f"    Banner: {banner}")
-        # To show closed and filtered ports, uncomment:
-        # else:
-        #     print(f"Port {port}: {status}")
->>>>>>> 02f5129e479dfc9d8d40b032dd58000889f1c2d1
+    if ip is None:
+        print("❌ Invalid domain or IP.")
+        exit()
+
+    # Block private IPs
+    if is_private_ip(ip):
+        print("❌ Private IP detected → Ignoring. Only public IP allowed.")
+        exit()
+
+    print(f"Resolved Target IP: {ip}")
+
+    # Load ports from defaultport.json
+    ports = load_ports()
+    if not ports:
+        print("❌ Port list empty. Check defaultport.json")
+        exit()
+
+    # Ask user which scan mode
+    mode = input("\nChoose scan mode:\n1 = Built-in scanner\n2 = Nmap\n> ")
+
+    if mode == "2":
+        nmap_scan(ip)
+    else:
+        results = port_scan(ip, ports)
+
+        print("\n--- Scan Results ---\n")
+        for port, status, banner in results:
+            if status == "OPEN":
+                print(f"[+] Port {port} OPEN")
+                if banner:
+                    print(f"    Banner: {banner}")
+
+
