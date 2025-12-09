@@ -213,10 +213,10 @@ class HostReportManager(ReportManager):
 if __name__ == "__main__":
     # Example 1: Using HostScanner directly, then generate report from cache
     scanner = HostScanner()
-    ip_range = scanner.icmp.generate_ip_range("172.23.35.1", "172.23.35.254")
+    sample_range = scanner.icmp.generate_ip_range("172.23.3.1", "172.23.3.254")
     
     # Scan and display
-    scanner.display(ip_range, method='auto')
+    scanner.display(sample_range, method='auto')
     
     # Generate report from cached results (NO RE-SCANNING)
     host_report = HostReportManager()

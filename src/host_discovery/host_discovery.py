@@ -358,7 +358,7 @@ if __name__ == "__main__":
     scanner = HostScanner()
     
     # Method 2: Cross-subnet range (e.g., 10.12.0.1 to 10.12.3.0)
-    sample_range = scanner.icmp.generate_ip_range("10.12.0.1", "10.12.3.254")
+    sample_range = scanner.icmp.generate_ip_range("172.23.3.1", "172.23.3.254")
     
     scanner.display(sample_range, method="auto")
 

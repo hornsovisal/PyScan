@@ -84,25 +84,3 @@
     21, 22, 23, 25, 53, 80, 110, 139, 143, 443, 445, 3389, 8080
   ]
 }
-
-// import json
-// import os
-
-// def load_default_ports(file_path='config/default_ports.json'):
-//     """Loads the list of common ports from the configuration file."""
-//     try:
-//         with open(file_path, 'r') as f:
-//             data = json.load(f)
-//             # We use the 'port_list_only' array for scanning efficiency
-//             return data.get('port_list_only', [])
-//     except FileNotFoundError:
-//         print(f"Error: Default ports file not found at {file_path}")
-//         return []
-//     except json.JSONDecodeError:
-//         print(f"Error: Failed to parse JSON file at {file_path}")
-//         return []
-
-// # Example usage:
-// ports_to_scan = load_default_ports()
-// if ports_to_scan:
-//     print(f"Scanning the following {len(ports_to_scan)} default ports: {ports_to_scan}")
