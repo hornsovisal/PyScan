@@ -102,4 +102,4 @@ if __name__ == "__main__":
         # To show closed and filtered ports, uncomment:
         # else:
         #     print(f"Port {port}: {status}")
->>>>>>> 02f5129e479dfc9d8d40b032dd58000889f1c2d1
+

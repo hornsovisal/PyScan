@@ -7,7 +7,6 @@ import subprocess
 import sys
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
 try:
     from scapy.all import ARP, Ether, srp, conf  # type: ignore
     SCAPY_AVAILABLE = True
