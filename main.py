@@ -3,7 +3,8 @@ import os
 
 # Add src directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-from host_discovery.host_discovery import HostScanner        
+from src.host_discovery.host_discovery import HostScanner
+from src.reportings.report_manager import HostReportManager
 def main():
     banner = banner = r"""
 ███████╗ ██████╗ █████╗ ███╗   ██╗    ██████╗  ██████╗ ███╗   ██╗██████╗  █████╗ ███╗   ██╗██╗  ██╗
@@ -43,7 +44,7 @@ def main():
                         if len(parts) != 4 or not all(part.isdigit() and 0 <= int(part) <= 255 for part in parts):
                             raise ValueError(f"Invalid IP format: {ip}")
                     
-                    # Assuming scanner.icmp.generate_ip_range is a valid method path
+                    # generate full ip range list
                     ip_range_list = scanner.icmp.generate_ip_range(start_ip, end_ip) 
                     
                 except ValueError as e:
@@ -57,6 +58,18 @@ def main():
 
            
                 print("\nScan complete.")
+                save = input("Generate report? (Y/N): ").strip().lower()
+                if save == 'y':
+                    # Create report manager and load cached scan results
+                    report_dir = os.path.join(os.path.dirname(__file__), 'src', 'reportings', 'reports')
+                    report_manager = HostReportManager(output_dir=report_dir)
+                    report_manager.scanner = scanner  # Use the same scanner with cached results
+                    report_manager.load_from_cached_scan()  # Load results from cache without re-scanning
+                    report_manager.display_summary()  # Show summary
+                    report_manager.generate_report()  # Generate and save DOCX report
+                    print("Report generated successfully.")
+                else:
+                    print("Report generation skipped.")
                 
             case "2":
                 
