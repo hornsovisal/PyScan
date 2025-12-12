@@ -42,24 +42,22 @@ You must have Python 3.x installed. You may also need to run the tool with eleva
 ## 🧩 Basic Usage
 
   To start **Scan-Bondanh**, simply run the main script:
-    ``    python3 main.py    ``
+    ```
+    python3 main.py
+    ```
   Once executed, the tool displays an ASCII banner followed by the main menu:
-    ``    ======== Scan Bondanh ========    ``
-
-    ``[1] Host Discovery    ``
-
-`` [2] Port Scanning     ``
-
-``[3] What is my IP?     ``
-
-``[4] Exit     ``
-
-``==============================     ``
-
-``Choose an option (1, 2, 3):    ``
-
-### 🔎 1. Host Discovery
-
+    
+    ```
+    ======== Scan Bondanh ========
+    [1] Host Discovery
+    [2] Port Scanning
+    [3] What is my IP?
+    [4] Exit
+    ==============================
+    Choose an option (1, 2, 3):
+    ```
+    
+  ### 🔎 1. Host Discovery
   Select this option to scan a network for active hosts.
   You will be prompted to enter an IP range (for example, `192.168.1.1-192.168.1.254`), and the tool will list all reachable devices on that network.
 
