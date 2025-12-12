@@ -23,8 +23,17 @@ class BaseScanner(ABC):
 
     def _load_ports(self):
         try:
+            # Try multiple path resolution strategies
             current_dir = os.path.dirname(os.path.abspath(__file__))
             project_root = os.path.dirname(os.path.dirname(current_dir))
+            
+            # If that doesn't work, try from current working directory
+            if not os.path.exists(os.path.join(project_root, "config")):
+                project_root = os.getcwd()
+                # Keep going up until we find the config dir
+                while project_root != "/" and not os.path.exists(os.path.join(project_root, "config")):
+                    project_root = os.path.dirname(project_root)
+            
             config_path = os.path.join(project_root, "config/default_ports.json")
             with open(config_path, "r", encoding="utf-8") as f:
                 lines = [line for line in f.read().splitlines() if not line.strip().startswith("/")]
@@ -38,6 +47,14 @@ class BaseScanner(ABC):
         try:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             project_root = os.path.dirname(os.path.dirname(current_dir))
+            
+            # If that doesn't work, try from current working directory
+            if not os.path.exists(os.path.join(project_root, "config")):
+                project_root = os.getcwd()
+                # Keep going up until we find the config dir
+                while project_root != "/" and not os.path.exists(os.path.join(project_root, "config")):
+                    project_root = os.path.dirname(project_root)
+            
             config_path = os.path.join(project_root, "config/hostnames.json")
             with open(config_path, "r", encoding="utf-8") as f:
                 return json.load(f)

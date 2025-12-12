@@ -4,7 +4,7 @@
 
 ---
 
-##  Key Features
+## Key Features
 
 * **Host Discovery:** Uses multiple methods to reliably detect active hosts: ICMP ping, ARP scanning (local subnet).
 * **High-Speed Scanning:** Implements **multi-threading** for efficient and rapid port scanning across large ranges.
@@ -15,7 +15,7 @@
 
 ---
 
-##  Project Setup
+## Project Setup
 
 ### Prerequisites
 
@@ -27,8 +27,9 @@ You must have Python 3.x installed. You may also need to run the tool with eleva
    **Bash**
 
    ```
-   git clone [YOUR_REPOSITORY_URL]
-   cd Py-Scan-Network-Tool
+   git clone https://github.com/hornsovisal/Scan-Bondanh.git
+   cd Scan-Bondanh
+
    ```
 2. **Install Dependencies:**
    All necessary external libraries are listed in `requirements.txt`.
@@ -38,45 +39,72 @@ You must have Python 3.x installed. You may also need to run the tool with eleva
    pip install -r requirements.txt
    ```
 
-### Basic Usage
-  ```
-    ./main.py
-   ```
+## 🧩 Basic Usage
 
----
+  To start **Scan-Bondanh**, simply run the main script:
+    ```
+    python3 main.py
+    ```
+  Once executed, the tool displays an ASCII banner followed by the main menu:
+    
+    ```
+    ======== Scan Bondanh ========
+    [1] Host Discovery
+    [2] Port Scanning
+    [3] What is my IP?
+    [4] Exit
+    ==============================
+    Choose an option (1, 2, 3):
+    ```
+    
+  ### 🔎 1. Host Discovery
+  Select this option to scan a network for active hosts.
+  You will be prompted to enter an IP range (for example, `192.168.1.1-192.168.1.254`), and the tool will list all reachable devices on that network.
+
+### 🚪 2. Port Scanning
+
+  Use this option to check for open ports on a specific target.
+  You will be asked to enter a target IP or domain (e.g., `cadt.edu.kh`), and the scanner will test common or specified ports to identify what services are running.
+
+### 🌐 3. What is my IP?
+
+  Displays your **IP address** and may also show additional local network information.
+
+### ❌ 4. Exit
+
+  Closes the program.
 
 ## 🧱 Project Structure
 
 The project is organized as a professional Python package (`py_scan_tool`) to ensure modularity and clean separation of duties.
 
-| Directory/File                        | Purpose                                                          | Key Files/Notes                                                            |
-| ------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| **📁`src/`**         | **The Core Python Package**(Source Code)                   | Contains all executable logic.                                             |
-| ├── 📁`host_discovery/`          | Handles**Host Detection**using ICMP, ARP, and TCP methods. | `icmp_ping.py`,`arp_scan.py`                                           |
-| ├── 📁`port_scanning/`           | Manages**Concurrency**and raw socket connections.          | `threaded_scanner.py`,`socket_handler.py`                              |
-| ├── 📁`reporting/`               | Handles**Report Generation**and file output.               | `report_manager.py`,`json_writer.py`                                   |
-| ├── 📄**`main.py`**    | **Primary Entry Point (CLI or GUI)**                              |  the entire scan process.                                      |
-| **📁`config/`**               | **Tool Settings**                                          | External files to configure tool behavior.                                 |
-| ├── 📄`default_ports.json`       | List of commonly scanned ports (e.g., 80, 443, 22).              |                                                                            |
-| └── 📄`scanner_config.yaml`      | **Performance Settings**(thread count, timeouts, retries). |                                                                            |
-| **📁`tests/`**                | **Automated Verification**                                 | Scripts to ensure the accuracy of host detection and port state logic.     |
-| └── 📄`test_scanner.py`          | Unit and integration tests.                                      |                                                                            |
-| **📁`reports/`**              | **Scan Output**                                            | Stores all generated scan reports.                                         |
-| └── 📄`scan_results_YYMMDD.pdf` | Example output file.                                             |                                                                            |
-| **📄`requirements.txt`**      | **Dependencies**                                           | List of all required Python libraries.                                     |
-| **📄`__init__py`**      | **Python Package**                                           | Mark a directory as a Python package.                                     |
+| Directory/File                       | Purpose                                                          | Key Files/Notes                                                        |
+| ------------------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **📁`src/`**                 | **The Core Python Package**(Source Code)                   | Contains all executable logic.                                         |
+| ├── 📁`host_discovery/`         | Handles**Host Detection**using ICMP, ARP, and TCP methods. | `icmp_ping.py`,`arp_scan.py`                                       |
+| ├── 📁`port_scanning/`          | Manages**Concurrency**and raw socket connections.          | `threaded_scanner.py`,`socket_handler.py`                          |
+| ├── 📁`reporting/`              | Handles**Report Generation**and file output.               | `report_manager.py`,`json_writer.py`                               |
+| ├── 📄**`main.py`**       | **Primary Entry Point (CLI or GUI)**                       | the entire scan process.                                               |
+| **📁`config/`**              | **Tool Settings**                                          | External files to configure tool behavior.                             |
+| ├── 📄`default_ports.json`      | List of commonly scanned ports (e.g., 80, 443, 22).              |                                                                        |
+| └── 📄`scanner_config.yaml`     | **Performance Settings**(thread count, timeouts, retries). |                                                                        |
+| **📁`tests/`**               | **Automated Verification**                                 | Scripts to ensure the accuracy of host detection and port state logic. |
+| └── 📄`test_scanner.py`         | Unit and integration tests.                                      |                                                                        |
+| **📁`reports/`**             | **Scan Output**                                            | Stores all generated scan reports.                                     |
+| └── 📄`scan_results_YYMMDD.pdf` | Example output file.                                             |                                                                        |
+| **📄`requirements.txt`**     | **Dependencies**                                           | List of all required Python libraries.                                 |
+| **📄`__init__py`**           | **Python Package**                                         | Mark a directory as a Python package.                                  |
 
 ---
 
-## Contribution
+## 🤝 Contribution
 
-**Prepared By:** Horn Sovisal, Kuyseng Marakat, Chhit Sovathana
+**Prepared By:** Horn Sovisal; Kuyseng Marakat; Chhit Sovathana
 
-**Course:** Python for Cyber Security 
+**Course:** Python for Cyber Security
 
 **Course Info** : This course introduces Python programming. with a strong focus on Object-Oriented Programming (OOP) and its application in cybersecurity.
 
 **Lecturer** : Mr. Han Leangsiv
 
 **Department:** Telecom and Networking, Cyber Security, Cambodia Accademy of Digital Technology(CADT)
-
