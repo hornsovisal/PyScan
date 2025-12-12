@@ -3,8 +3,9 @@ import os
 
 # Add src directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-from src.host_discovery.host_discovery import HostScanner
-from src.reportings.report_manager import HostReportManager
+from host_discovery.host_discovery import HostScanner
+from reportings.report_manager import HostReportManager
+from IP_Finding.ip_find import IPConfig
 def main():
     banner = banner = r"""
 ███████╗ ██████╗ █████╗ ███╗   ██╗    ██████╗  ██████╗ ███╗   ██╗██████╗  █████╗ ███╗   ██╗██╗  ██╗
@@ -24,10 +25,11 @@ def main():
         print("\n======== Scan Bondanh ========")
         print("[1] Host Discovery")
         print("[2] Port Scanning")
-        print("[3] Exit")
+        print("[3] What is my IP?")
+        print("[4] Exit")
         print("==============================")
 
-        choice = input("Choose an option (1, 2, 3): ").strip()
+        choice = input("Choose an option (1-4): ").strip()
         
     
         match choice:
@@ -75,15 +77,19 @@ def main():
                 
                 print("Port Scanning functionality is not yet implemented.")
                 pass
-
             case "3":
+                try:
+                    ip_config = IPConfig()
+                    ip_config.display_ipv4()
+                except Exception as e:
+                    print(f"Error displaying IP configuration: {e}")
+            case "4":
                 
                 print(" Exiting Scan Bondanh. Goodbye!")
                 return 
             
             case _:
-              
-                print(f"Invalid option: '{choice}'. Please choose 1, 2, or 3.")
+                print(f"Invalid option: '{choice}'. Please choose 1, 2, 3, or 4.")
         
 if __name__ == "__main__":
     main()
