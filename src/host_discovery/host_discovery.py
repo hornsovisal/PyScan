@@ -60,6 +60,7 @@ class BaseScanner(ABC):
                 return json.load(f)
         except Exception:
             return {}
+    
 
     def _check_port(self, ip, port):
         try:

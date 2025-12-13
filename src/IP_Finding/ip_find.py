@@ -1,20 +1,12 @@
-"""IP Configuration module that extends BaseScanner - get IPv4 addresses."""
-import socket
-import subprocess
-import platform
-import sys
-from pathlib import Path
-
-
+import netifaces
 class IPConfig():
-    """IP Configuration class that extends BaseScanner to display network interface information."""
+    """IP Configuration class  to display network interface information."""
 
     def get_interface_info(self):
         """Get detailed network interface information."""
         interfaces = []
         
         try:
-            import netifaces
             for iface in netifaces.interfaces():
                 addrs = netifaces.ifaddresses(iface)
                 iface_info = {
@@ -110,6 +102,7 @@ class IPConfig():
         print()
 
 
+#Test code 
 
 if __name__ == "__main__":
     config = IPConfig()

@@ -66,14 +66,26 @@ def main():
                 print("\nScan complete.")
                 save = input("Generate report? (Y/N): ").strip().lower()
                 if save == 'y':
+                    # Get customer information
+                    customer_name = input("Enter Customer/Client Name: ").strip()
+                    if not customer_name:
+                        customer_name = "Network Security Assessment"
+                    
+                    network_range = f"{start_ip} to {end_ip}"
                     # Create report manager and load cached scan results
                     report_dir = os.path.join(os.path.dirname(__file__), 'src', 'reportings', 'reports')
                     report_manager = HostReportManager(output_dir=report_dir)
                     report_manager.scanner = scanner  # Use the same scanner with cached results
                     report_manager.load_from_cached_scan()  # Load results from cache without re-scanning
                     report_manager.display_summary()  # display the result
-                    report_manager.generate_report()  # Generate report and save as docx
-                    print("Report generated successfully.")
+                    
+                    # Generate professional report with custom metadata
+                    report_manager.generate_report(
+                        customer_name=customer_name,
+                        network_range=network_range,
+                        project_by= "Scan Bondanh Team "
+                    )
+                    print("✓ Professional report generated successfully!")
                 else:
                     print("Report generation skipped.")
                 # Wait for user to press Enter (handle non-interactive runs)
