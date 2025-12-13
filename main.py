@@ -1,11 +1,15 @@
 import sys
 import os
 
+
 # Add src directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-from host_discovery.host_discovery import HostScanner
-from reportings.report_manager import HostReportManager
-from IP_Finding.ip_find import IPConfig
+from src.host_discovery.host_discovery import HostScanner
+from src.reportings.report_manager import HostReportManager
+from src.IP_Finding.ip_find import IPConfig
+
+
+
 def main():
     banner = banner = r"""
 ███████╗ ██████╗ █████╗ ███╗   ██╗    ██████╗  ██████╗ ███╗   ██╗██████╗  █████╗ ███╗   ██╗██╗  ██╗
@@ -15,13 +19,12 @@ def main():
 ███████║╚██████╗██║  ██║██║ ╚████║    ██████╔╝╚██████╔╝██║ ╚████║██████╔╝██║  ██║██║ ╚████║██║  ██║
 ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝
                                                                                                    
-                                       
-"""
-    print(banner)
-    hosts = []
-    results = {}
 
+"""
+    # print(banner)
+    
     while True:
+        print(banner)
         print("\n======== Scan Bondanh ========")
         print("[1] Host Discovery")
         print("[2] Port Scanning")
@@ -31,7 +34,7 @@ def main():
 
         choice = input("Choose an option (1-4): ").strip()
         
-    
+
         match choice:
             case "1":
                 # Host Discovery Logic
@@ -72,7 +75,16 @@ def main():
                     print("Report generated successfully.")
                 else:
                     print("Report generation skipped.")
-                
+                # Wait for user to press Enter (handle non-interactive runs)
+                try:
+                    input("Press Enter to continue...")
+                except EOFError:
+                    pass
+                # Prefer ANSI clear for portability, fall back to os.system
+                try:
+                    print("\033c", end="")
+                except Exception:
+                    os.system('cls' if os.name == 'nt' else 'clear')
             case "2":
                 
                 print("Port Scanning functionality is not yet implemented.")
